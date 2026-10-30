@@ -8,6 +8,7 @@ scripts/
 temp/
 tmp/
 !/.claude/skills/**
+!/skills/**
 .env
 .env.local
 .env.*.local

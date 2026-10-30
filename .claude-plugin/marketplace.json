@@ -1,0 +1,14 @@
+{
+  "name": "winter-home-skills",
+  "description": "Codex와 Claude Code에서 공유하는 개발 워크플로 스킬",
+  "owner": {
+    "name": "winter-home"
+  },
+  "plugins": [
+    {
+      "name": "dev-workflow",
+      "source": "./",
+      "description": "코드 리뷰, 개선 루프, 플랜 실행과 커밋을 위한 공용 스킬"
+    }
+  ]
+}

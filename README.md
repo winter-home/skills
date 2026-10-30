@@ -1,4 +1,4 @@
-# dev-workflow
+# dw
 
 Codex와 Claude Code에서 쓰는 코드 리뷰·플랜 실행·커밋 스킬 플러그인이다.
 
@@ -32,16 +32,16 @@ skills/                           두 도구가 사용하는 스킬 원본
 
 ```powershell
 claude plugin marketplace add winter-home/skills
-claude plugin install dev-workflow@winter-home-skills
+claude plugin install dw@winter-home-skills
 ```
 
-새 세션에서 `/dev-workflow:rreview 110`처럼 호출한다.
+새 세션에서 `/dw:rreview 110`처럼 호출한다.
 
 ### Codex
 
 ```powershell
 codex plugin marketplace add winter-home/skills
-codex plugin add dev-workflow@winter-home-skills
+codex plugin add dw@winter-home-skills
 ```
 
 Codex 앱을 다시 열거나 새 세션을 시작한 뒤 플러그인의 스킬 목록에서 실행한다. 로컬 설치를 시험할 때는 양쪽 `marketplace add`의 저장소 이름 대신 깨끗한 패키지 폴더의 절대 경로를 쓸 수 있다.

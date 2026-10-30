@@ -6,7 +6,7 @@
   },
   "plugins": [
     {
-      "name": "dev-workflow",
+      "name": "dw",
       "source": "./",
       "description": "코드 리뷰, 개선 루프, 플랜 실행과 커밋을 위한 공용 스킬"
     }

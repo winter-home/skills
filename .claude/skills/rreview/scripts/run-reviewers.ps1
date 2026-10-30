@@ -48,6 +48,17 @@ function Add-Reviewer([string]$Name, [string]$Kind, [string[]]$Arguments) {
         })
 }
 
+# Codex's Windows sandbox cannot launch the Microsoft Store pwsh (CreateProcessAsUserW error 5), so another pwsh goes first on codex's PATH.
+$codexPath = $null
+if ($IsWindows -and $counts[0] -gt 0) {
+    $candidates = @(Get-Command pwsh -All -CommandType Application -ErrorAction SilentlyContinue |
+            Where-Object Source -NotMatch '\\WindowsApps\\' | ForEach-Object Source)
+    $candidates += Join-Path $HOME '.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.exe'
+    $codexPwsh = $candidates | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+    if ($codexPwsh) { $codexPath = (Split-Path -Parent $codexPwsh) + ';' + $env:PATH }
+    else { Write-Warning 'No pwsh outside WindowsApps found; codex reviewers cannot run shell commands.' }
+}
+
 $codexModelArgs = @(if ($CodexModel) { '-m', $CodexModel })
 for ($i = 1; $i -le $counts[0]; $i++) {
     $name = "codex-creview-$i"
@@ -71,6 +82,7 @@ foreach ($r in $reviewers) {
         $psi = [Diagnostics.ProcessStartInfo]::new($exe)
         foreach ($a in $r.Arguments) { $psi.ArgumentList.Add($a) }
         $psi.WorkingDirectory = $Repo
+        if ($r.Kind -eq 'codex' -and $codexPath) { $psi.Environment['PATH'] = $codexPath }
         $psi.UseShellExecute = $false
         $psi.RedirectStandardInput = $true
         $psi.RedirectStandardOutput = $true

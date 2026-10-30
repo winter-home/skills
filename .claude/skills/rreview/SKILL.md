@@ -50,7 +50,8 @@ pwsh -NoProfile -File "<rreview 스킬 디렉터리>/scripts/run-reviewers.ps1" 
   ```
 - 리뷰어가 도는 동안 작업 트리를 수정하지 않는다.
 - 선택 옵션: `-CodexModel`(기본 `~/.codex/config.toml`의 `model`), `-ClaudeModel`(기본 `opus`), `-CodexSandbox`(기본 `read-only`), `-TimeoutMinutes`(기본 60).
-- Windows의 codex `read-only`는 셸 생성이 막혀 다른 도구로 우회하므로 느릴 수 있다. `danger-full-access`가 더 빠르지만 Claude Code auto 모드 분류기가 실행을 막을 수 있으므로 사용자가 요청할 때만 쓴다.
+- Windows의 codex 샌드박스는 Microsoft Store판 pwsh를 실행하지 못한다. 스크립트는 Store판이 아닌 pwsh(PATH 또는 Codex 앱 번들)를 codex의 PATH 맨 앞에 둔다. 찾지 못하면 경고를 출력하며, codex 리뷰어는 셸 명령을 실행하지 못한다.
+- `danger-full-access`는 Claude Code auto 모드 분류기가 실행을 막을 수 있으므로 사용자가 요청할 때만 쓴다.
 
 ### 2. 실행 결과 확인
 

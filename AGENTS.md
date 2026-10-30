@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Codex와 Claude Code에서 쓸 공용 플러그인을 만든다. 스킬 원본은 표준 경로인 `skills/`에 보관한다. `.claude/skills/`는 전환 중 유지하는 기존 경로이며, 플러그인은 이 경로에 의존하지 않는다.
+Codex와 Claude Code에서 쓸 공용 플러그인을 만든다. 스킬 원본은 표준 경로인 `skills/`에 보관한다.
 
 ## Mandatory Constraints
 

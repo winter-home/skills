@@ -11,7 +11,7 @@ plugin.json                       Codex용 Agent Plugins 1.0 매니페스트
 skills/                           두 도구가 사용하는 스킬 원본
 ```
 
-`skills/`만 수정한다. 기존 `.claude/skills/`는 전환 중 남겨 둔 별도 사본이며 추후 제거한다. 플러그인은 이 경로와 `.agents/skills` 링크에 의존하지 않는다.
+`skills/`만 수정한다. `.agents/skills`는 로컬 탐색용 링크이며 플러그인 설치에는 필요하지 않다.
 
 | 스킬 | 용도 |
 | --- | --- |

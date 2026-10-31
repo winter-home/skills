@@ -25,7 +25,7 @@ allowed-tools: Read Grep Glob Write Bash(git *) Bash(pwsh -NoProfile -File *run-
 
 1. `../ccreview/references/commit-range.md`를 완전히 읽고 범위를 확정한다. working tree의 변경 유무와 무관하게 진행하며 `git add -N`은 하지 않는다. 대상 diff가 없으면 종료한다.
 2. 실행 디렉터리 `tmp/ppwork/<yyyyMMdd-HHmmss>`를 만든다.
-3. `brief.md`에 사용자 입력 범위, 고정한 `<base>..<end>`, 종료 커밋, 사용자 요청·합의한 동작·의도적으로 제외한 범위·집중 영역을 쓴다. 과거 변경의 목적이 불명확하면 그렇게 적고 현재 요청을 과거 요구사항으로 간주하지 않는다.
+3. `brief.md`에 사용자 입력 범위, 고정한 `<base>..<end>`, 종료 커밋, 사용자 요청·합의한 요구사항·완료 조건·제외 범위·집중 영역을 쓴다. `../pwork/SKILL.md`의 「brief 원칙」을 적용한다. 과거 변경의 목적이 불명확하면 그렇게 적고 현재 요청을 과거 요구사항으로 간주하지 않는다.
 
 ## 실행·검증
 

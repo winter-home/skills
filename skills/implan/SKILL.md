@@ -1,14 +1,14 @@
 ---
-name: iplan
+name: implan
 description: "플랜 전체 또는 지정한 단계의 미완료 작업을 구현·검증하고, 단계마다 lwork 루프·커밋을 수행한다. 실패한 단계는 lwork 복구로 세부 단계로 나눠 다시 구현한다."
 disable-model-invocation: true
 argument-hint: "<플랜 파일> [lwork 리뷰어 구성 3자리 (기본 200) [실행 단계 (예: 3단계)]]"
 allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File *run-reviewers.ps1*) PowerShell(git *) PowerShell(pwsh -NoProfile -File *run-reviewers.ps1*)
 ---
 
-# iplan — 플랜 단계별 구현
+# implan — 플랜 단계별 구현
 
-플랜 전체 또는 지정한 단계의 미완료 작업을 순서대로 구현하고, 단계마다 lwork 루프를 통과하면 커밋한다. iplan 호출은 단계별 커밋과 단계 관련 검증(단위·타입·린트 등) 실행을 허락한 것으로 본다. 푸시와 브랜치 변경은 하지 않는다.
+플랜 전체 또는 지정한 단계의 미완료 작업을 순서대로 구현하고, 단계마다 lwork 루프를 통과하면 커밋한다. implan 호출은 단계별 커밋과 단계 관련 검증(단위·타입·린트 등) 실행을 허락한 것으로 본다. 푸시와 브랜치 변경은 하지 않는다.
 
 ## 인자
 
@@ -19,7 +19,7 @@ allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File 
 ## 준비
 
 1. 플랜 파일 외의 tracked 변경이 있으면 종료한다. 단계 경계를 커밋으로 나누므로 시작 전 변경이 섞이면 안 된다.
-2. 실행 디렉터리를 만든다: `tmp/iplan/<yyyyMMdd-HHmmss>`. 단계 기록(`progress.md`)을 둔다.
+2. 실행 디렉터리를 만든다: `tmp/implan/<yyyyMMdd-HHmmss>`. 단계 기록(`progress.md`)을 둔다.
 
 ## 단계 정리
 
@@ -39,7 +39,7 @@ allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File 
 
 ### 구현·검증
 
-플랜과 저장소 규칙에 따라 구현하고 단계 관련 빌드·테스트 등으로 완료 조건을 확인한다. 새 파일은 `git add -N`으로 리뷰 범위에 넣는다. 빌드·테스트 실패는 현재 단계에서 원인을 고쳐 다시 확인한다. 완료 조건을 충족할 수 없다고 판단하면 구현 실패다. 같은 원인의 지적·수정 반복 횟수만으로 구현 실패로 판단하지 않는다. 환경 오류면 iplan을 중단한다.
+플랜과 저장소 규칙에 따라 구현하고 단계 관련 빌드·테스트 등으로 완료 조건을 확인한다. 새 파일은 `git add -N`으로 리뷰 범위에 넣는다. 빌드·테스트 실패는 현재 단계에서 원인을 고쳐 다시 확인한다. 완료 조건을 충족할 수 없다고 판단하면 구현 실패다. 같은 원인의 지적·수정 반복 횟수만으로 구현 실패로 판단하지 않는다. 환경 오류면 implan을 중단한다.
 
 ### lwork 호출
 
@@ -50,7 +50,7 @@ allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File 
 | lwork 결과                                                               | 처리                  |
 | -------------------------------------------------------------------------- | --------------------- |
 | 수용할 지적 없음·유예만 남음, Nit 적용 후 종료, 복구의 모든 세부 단계 통과 | 「리뷰 통과 후」로 이동 |
-| 리뷰어 실행 실패·복구 중단 등 lwork가 중단됨                             | iplan 중단(롤백 없음) |
+| 리뷰어 실행 실패·복구 중단 등 lwork가 중단됨                             | implan 중단(롤백 없음) |
 
 ### 리뷰 통과 후
 
@@ -64,7 +64,7 @@ allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File 
 단계 미지정 시에는 보류를 뺀 미완료 작업을 모두 마치는 단계에서, 단계 지정 시에는 플랜의 마지막 단계(분할 시 마지막 세부 단계)에서 수행한다. 완료 표시·커밋 전에 실행한다.
 
 1. 전체 검증을 실행한다. 성공하면 「리뷰 통과 후」의 완료 표시·커밋으로 간다.
-2. 환경 오류면 iplan을 중단한다. 검증 실패면 원인별 수정 횟수를 `progress.md`에 누적하고 lwork 재호출·복구 후에도 유지한다. 같은 원인으로 세 번 고쳐도 실패하면 새 복구 없이 중단한다.
+2. 환경 오류면 implan을 중단한다. 검증 실패면 원인별 수정 횟수를 `progress.md`에 누적하고 lwork 재호출·복구 후에도 유지한다. 같은 원인으로 세 번 고쳐도 실패하면 새 복구 없이 중단한다.
 3. 상한 전에는 오류를 고치고 「lwork 호출」로 돌아간다. brief의 현재 미커밋 작업 범위·원문 위치를 갱신하고 원문에 없는 추가 합의만 짧게 적는다. 이미 커밋된 항목은 완료로 구분하며 실패 재현 조건·수정 이력은 brief 대신 `progress.md`에 기록한다.
 
 ## 최종 보고

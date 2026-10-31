@@ -50,6 +50,10 @@ codex plugin add dw@winter-home-skills
 
 Codex 앱을 다시 열거나 새 세션을 시작한 뒤 플러그인의 스킬 목록에서 실행한다. 로컬 설치를 시험할 때는 양쪽 `marketplace add`의 저장소 이름 대신 깨끗한 패키지 폴더의 절대 경로를 쓸 수 있다.
 
+### 업데이트
+
+Windows에서는 저장소 루트의 `update-plugins.cmd`를 더블클릭하면 Claude Code·Codex의 마켓플레이스와 `dw` 플러그인을 순서대로 갱신한다. 실패하면 해당 단계에서 멈추고 결과 창을 유지한다. 완료 후 앱을 다시 열거나 새 세션을 시작한다.
+
 ## 실행 조건
 
 - 리뷰 스크립트는 Git과 PowerShell 7.2 이상을 사용한다. 선택한 리뷰어의 `codex`·`claude` CLI가 PATH에 있고 각각 인증되어 있어야 한다.

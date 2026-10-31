@@ -1,6 +1,6 @@
 #Requires -Version 7.2
 param(
-    [Parameter(Mandatory)][ValidatePattern('^[0-2]{3}$')][string]$Spec,
+    [Parameter(Mandatory)][ValidatePattern('^[0-2]{2,3}$')][string]$Spec,
     [Parameter(Mandatory)][string]$OutDir,
     [Parameter(Mandatory)][string]$BriefFile,
     [string]$Repo = (Get-Location).Path,
@@ -8,7 +8,8 @@ param(
     [string]$ClaudeModel = 'opus',
     [ValidateSet('read-only', 'workspace-write', 'danger-full-access')][string]$CodexSandbox = 'read-only',
     [int]$TimeoutMinutes = 60,
-    [ValidatePattern('^[0-9a-fA-F]{40,64}\.\.[0-9a-fA-F]{40,64}$')][string]$CommitRange
+    [ValidatePattern('^[0-9a-fA-F]{40,64}\.\.[0-9a-fA-F]{40,64}$')][string]$CommitRange,
+    [switch]$Job
 )
 
 $ErrorActionPreference = 'Stop'
@@ -25,8 +26,11 @@ function Get-TreeFingerprint {
     [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData([Text.Encoding]::UTF8.GetBytes($text)))
 }
 
-$counts = $Spec.ToCharArray() | ForEach-Object { [int][string]$_ }
+if ($Spec.Length -ne $(if ($Job) { 2 } else { 3 })) { throw 'Job requires two digits; review requires three digits.' }
+if ($Job -and $CommitRange) { throw 'Job and CommitRange cannot be combined; specify the target in the brief.' }
+$counts = @($Spec.ToCharArray() | ForEach-Object { [int][string]$_ })
 if (($counts | Measure-Object -Sum).Sum -eq 0) { throw "Spec $Spec requests no reviewers." }
+if ($Job) { $counts += 0 }
 
 $Repo = [IO.Path]::GetFullPath((git -C $Repo rev-parse --show-toplevel))
 if ($CommitRange) {
@@ -35,6 +39,9 @@ if ($CommitRange) {
     [void](Invoke-Git rev-parse --verify "$($rangeParts[1])^{commit}")
 }
 $BriefFile = (Resolve-Path -LiteralPath $BriefFile).Path
+if ($Job -and [string]::IsNullOrWhiteSpace((Get-Content -LiteralPath $BriefFile -Raw -Encoding utf8))) {
+    throw 'Job brief must contain a task request.'
+}
 $OutDir = [IO.Path]::GetFullPath($OutDir)
 if (($OutDir + '\').StartsWith($Repo + '\', [StringComparison]::OrdinalIgnoreCase)) {
     git -C $Repo check-ignore -q -- $OutDir
@@ -46,6 +53,15 @@ $briefNote = "Read the request brief at '$BriefFile' first and judge the change 
 $skillsRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 function Get-ReviewerPrompt([string]$SkillName) {
+    if ($Job) {
+        # Keep the native CLI argument on one line for Windows .cmd wrappers.
+        return @(
+            "Read the task brief at '$BriefFile' and independently carry out its request in the project at '$Repo'. Follow applicable project instructions and the brief's scope and verification permissions."
+            'This is an analysis-only task. Use read-only inspection; do not modify project files or external resources, stage, commit, or checkout. Report requested actions outside this scope without performing them.'
+            'Determine the target from the brief, not from Git diffs. A clean worktree is not a reason to skip the task. Do not invoke creview, sreview, or pjob.'
+            'Return the requested result in Korean, with evidence (file:line or sources), assumptions, and unverified limitations. Do not claim checks you did not perform.'
+        ) -join ' '
+    }
     $skillFile = (Resolve-Path -LiteralPath (Join-Path $skillsRoot "$SkillName/SKILL.md")).Path
     $skillDirectory = Split-Path -Parent $skillFile
     $skillArguments = if ($CommitRange) { "$CommitRange $briefNote" } else { $briefNote }
@@ -74,7 +90,7 @@ if ($IsWindows -and $counts[0] -gt 0) {
 }
 
 $codexModelArgs = @(if ($CodexModel) { '-m', $CodexModel })
-$codeSkill = if ($CommitRange) { 'ccreview' } else { 'creview' }
+$codeSkill = if ($Job) { 'job' } elseif ($CommitRange) { 'ccreview' } else { 'creview' }
 $simplicitySkill = if ($CommitRange) { 'ssreview' } else { 'sreview' }
 for ($i = 1; $i -le $counts[0]; $i++) {
     $name = "codex-$codeSkill-$i"

@@ -9,7 +9,8 @@ param(
     [ValidateSet('read-only', 'workspace-write', 'danger-full-access')][string]$CodexSandbox = 'read-only',
     [int]$TimeoutMinutes = 60,
     [ValidatePattern('^[0-9a-fA-F]{40,64}\.\.[0-9a-fA-F]{40,64}$')][string]$CommitRange,
-    [switch]$Job
+    [switch]$Job,
+    [string]$SourceDirsFile
 )
 
 $ErrorActionPreference = 'Stop'
@@ -39,6 +40,18 @@ if ($CommitRange) {
     [void](Invoke-Git rev-parse --verify "$($rangeParts[1])^{commit}")
 }
 $BriefFile = (Resolve-Path -LiteralPath $BriefFile).Path
+$sourceDirs = @()
+if ($SourceDirsFile) {
+    $sourcePaths = Get-Content -LiteralPath $SourceDirsFile -Raw -Encoding utf8 | ConvertFrom-Json -NoEnumerate
+    if ($sourcePaths -isnot [array]) { throw 'SourceDirsFile must contain a JSON array of absolute directory paths.' }
+    $sourceDirs = @($sourcePaths | ForEach-Object {
+            if ($_ -isnot [string] -or -not [IO.Path]::IsPathFullyQualified($_)) { throw 'Source directory paths must be absolute strings.' }
+            $directory = Get-Item -LiteralPath $_
+            if (-not $directory.PSIsContainer) { throw "Source directory is not a directory: $_" }
+            $directory.FullName
+        } | Select-Object -Unique)
+}
+$sourceDirArgs = @(foreach ($directory in $sourceDirs) { '--add-dir'; $directory })
 if ($Job -and [string]::IsNullOrWhiteSpace((Get-Content -LiteralPath $BriefFile -Raw -Encoding utf8))) {
     throw 'Job brief must contain a task request.'
 }
@@ -49,14 +62,14 @@ if (($OutDir + '\').StartsWith($Repo + '\', [StringComparison]::OrdinalIgnoreCas
 }
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 
-$briefNote = "Read the request brief at '$BriefFile' first and judge the change against it."
+$briefNote = "Read the request brief at '$BriefFile' first, then read the requirement sources it identifies before reviewing. Use the review target version of repository sources. If a required source is unavailable, explicitly report an incomplete review rather than a pass."
 $skillsRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 function Get-ReviewerPrompt([string]$SkillName) {
     if ($Job) {
         # Keep the native CLI argument on one line for Windows .cmd wrappers.
         return @(
-            "Read the task brief at '$BriefFile' and independently carry out its request in the project at '$Repo'. Follow applicable project instructions and the brief's scope and verification permissions."
+            "Read the task brief at '$BriefFile' and its requirement sources, then independently carry out its request in the project at '$Repo'. If a required source is unavailable, explicitly report the task as incomplete. Follow applicable project instructions and the brief's scope and verification permissions."
             'This is an analysis-only task. Use read-only inspection; do not modify project files or external resources, stage, commit, or checkout. Report requested actions outside this scope without performing them.'
             'Determine the target from the brief, not from Git diffs. A clean worktree is not a reason to skip the task. Do not invoke creview, sreview, or pjob.'
             'Return the requested result in Korean, with evidence (file:line or sources), assumptions, and unverified limitations. Do not claim checks you did not perform.'
@@ -99,10 +112,10 @@ for ($i = 1; $i -le $counts[0]; $i++) {
 }
 foreach ($skill in @(@{ Name = $codeSkill; Count = $counts[1] }, @{ Name = $simplicitySkill; Count = $counts[2] })) {
     for ($i = 1; $i -le $skill.Count; $i++) {
-        Add-Reviewer "claude-$($skill.Name)-$i" 'claude' @('-p', (Get-ReviewerPrompt $skill.Name),
+        Add-Reviewer "claude-$($skill.Name)-$i" 'claude' (@('-p', (Get-ReviewerPrompt $skill.Name),
             '--model', $ClaudeModel, '--output-format', 'json', '--no-session-persistence',
-            '--add-dir', $skillsRoot, '--add-dir', (Split-Path -Parent $BriefFile),
-            '--disallowedTools', 'Edit', 'Write', 'NotebookEdit')
+            '--add-dir', $skillsRoot, '--add-dir', (Split-Path -Parent $BriefFile)) + $sourceDirArgs +
+            @('--disallowedTools', 'Edit', 'Write', 'NotebookEdit'))
     }
 }
 
@@ -166,6 +179,7 @@ $summary = [ordered]@{
     spec              = $Spec
     repo              = $Repo
     commitRange       = $CommitRange
+    sourceDirs        = $sourceDirs
     worktreeUnchanged = ($before -eq $after)
     reviewers         = @($reviewers | ForEach-Object {
             $hasOutput = (Test-Path -LiteralPath $_.Output) -and (Get-Item -LiteralPath $_.Output).Length -gt 0

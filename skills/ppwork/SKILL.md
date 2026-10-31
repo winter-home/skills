@@ -25,7 +25,7 @@ allowed-tools: Read Grep Glob Write Bash(git *) Bash(pwsh -NoProfile -File *run-
 
 1. `../ccreview/references/commit-range.md`를 완전히 읽고 범위를 확정한다. working tree의 변경 유무와 무관하게 진행하며 `git add -N`은 하지 않는다. 대상 diff가 없으면 종료한다.
 2. 실행 디렉터리 `tmp/ppwork/<yyyyMMdd-HHmmss>`를 만든다.
-3. `brief.md`에 사용자 입력 범위, 고정한 `<base>..<end>`, 종료 커밋, 사용자 요청·합의한 요구사항·완료 조건·제외 범위·집중 영역을 쓴다. `../pwork/SKILL.md`의 「brief 원칙」을 적용한다. 과거 변경의 목적이 불명확하면 그렇게 적고 현재 요청을 과거 요구사항으로 간주하지 않는다.
+3. `../pwork/SKILL.md`의 「brief 원칙」·「원문 접근」에 따라 준비하고 사용자 입력 범위, 고정한 `<base>..<end>`, 종료 커밋을 포함한다. 원문 확인도 종료 tree 기준으로 한다. 과거 변경의 목적이 불명확하면 그렇게 적고 현재 요청을 과거 요구사항으로 간주하지 않는다.
 
 ## 실행·검증
 
@@ -37,7 +37,7 @@ allowed-tools: Read Grep Glob Write Bash(git *) Bash(pwsh -NoProfile -File *run-
 pwsh -NoProfile -File "<pwork 스킬 디렉터리>/scripts/run-reviewers.ps1" -Spec <구성> -CommitRange "<base>..<end>" -OutDir "<실행 디렉터리>" -BriefFile "<실행 디렉터리>/brief.md"
 ```
 
-- 분리 프로세스로 실행할 때도 `-CommitRange`를 전달한다. 완료 후 `summary.json`을 출력하고 모든 리뷰 결과를 확인한다.
+- 분리 프로세스로 실행할 때도 `-CommitRange`와 필요한 `-SourceDirsFile`을 전달한다. 완료 후 `summary.json`을 출력하고 모든 리뷰 결과를 확인한다.
 - 대상 diff가 있는데 "변경 사항 없음"으로 끝난 리뷰는 실패다. working tree 변경 유무로 성공을 판단하지 않는다.
 - 지적 정리의 `creview`·`sreview`는 각각 `ccreview`·`ssreview`로 읽는다. 심각도는 `ccreview` 지적에만 붙인다.
 - vreview 사실 확인과 이력 조회도 고정한 종료 tree·커밋을 기준으로 한다. 현재 checkout의 파일·이력과 섞지 않는다.

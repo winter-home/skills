@@ -20,7 +20,7 @@ allowed-tools: Read Grep Glob Write Bash(git *) Bash(pwsh -NoProfile -File *run-
 
 1. 대상 Git 프로젝트 루트에서 상태를 확인한다. 대상은 요청으로 정하며 미커밋 변경이 없어도 실행한다. `git add -N`도 하지 않는다.
 2. 실행 디렉터리 `tmp/pjob/<yyyyMMdd-HHmmss>`를 만든다.
-3. `brief.md`에 요청 원문, 합의한 요구사항·완료 조건, 대상·제외 범위, 필요한 맥락과 검증 허락 범위를 쓴다. 플랜 작업 중이면 확인된 플랜 경로·현재 단계를 포함한다. `../pwork/SKILL.md`의 「brief 원칙」을 적용한다.
+3. `../pwork/SKILL.md`의 「brief 원칙」·「원문 접근」에 따라 준비하고 검증 허락 범위를 포함한다. 플랜 작업 중이면 확인된 플랜 경로·현재 단계를 작업 맥락으로 적는다.
 
 ## 실행
 
@@ -30,9 +30,9 @@ allowed-tools: Read Grep Glob Write Bash(git *) Bash(pwsh -NoProfile -File *run-
 pwsh -NoProfile -File "<pwork 스킬 디렉터리>/scripts/run-reviewers.ps1" -Job -Spec <구성> -OutDir "<실행 디렉터리>" -BriefFile "<실행 디렉터리>/brief.md"
 ```
 
-`../pwork/SKILL.md`의 「실행 환경과 대기」만 따른다. 분리 프로세스에도 `-Job`을 전달한다. 실행 중 작업 트리를 수정하지 않고, 모든 에이전트가 끝난 뒤 `summary.json`을 출력한다.
+`../pwork/SKILL.md`의 「실행 환경과 대기」만 따른다. 분리 프로세스에도 `-Job`과 필요한 `-SourceDirsFile`을 전달한다. 실행 중 작업 트리를 수정하지 않고, 모든 에이전트가 끝난 뒤 `summary.json`을 출력한다.
 
-- `ok`가 false인 결과는 로그로 원인을 확인해 제외·보고한다. 요청을 수행하지 않고 미커밋 변경이 없다는 이유로 끝낸 결과도 실패다. 전부 실패하면 중단한다.
+- `ok`가 false인 결과는 로그로 원인을 확인해 제외·보고한다. 필수 원문에 접근하지 못했거나 미커밋 변경이 없다는 이유로 요청을 수행하지 않은 결과도 실패다. 전부 실패하면 중단한다.
 - `worktreeUnchanged`가 false이면 결과 검증을 중단하고 변경을 보고한다. 자동으로 되돌리지 않는다.
 - 성공한 에이전트별 결과·근거·검증 한계를 먼저 요약해 보여 준다.
 

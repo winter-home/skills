@@ -54,7 +54,7 @@ Codex 앱을 다시 열거나 새 세션을 시작한 뒤 플러그인의 스킬
 
 ### 업데이트
 
-Windows에서는 저장소 루트의 `update-plugins.cmd`를 더블클릭하면 Claude Code·Codex의 마켓플레이스와 `dw` 플러그인을 순서대로 갱신한다. 실패하면 해당 단계에서 멈추고 결과 창을 유지한다. 완료 후 앱을 다시 열거나 새 세션을 시작한다.
+Windows에서는 저장소 루트의 `update-plugins.cmd`를 더블클릭하면 Claude Code·Codex에 `dw`, `document-skills`, `example-skills`, `discernment-nudge`를 설치하거나 갱신한다. 필요한 마켓플레이스도 없으면 등록하며, Claude Code 플러그인은 사용자 범위에 설치·갱신한다. 실패하면 해당 단계에서 멈추고 결과 창을 유지한다. 완료 후 앱을 다시 열거나 새 세션을 시작한다.
 
 ## 실행 조건
 

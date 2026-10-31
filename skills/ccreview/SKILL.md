@@ -2,7 +2,7 @@
 name: ccreview
 description: "단일 커밋 또는 지정한 커밋 범위의 최종 누적 변경을 일반적인 코드 리뷰 기준으로 검토한다. 과거 tree나 임의 Git 범위 리뷰에 사용한다."
 disable-model-invocation: true
-argument-hint: "<커밋 범위 | 단일 커밋> [리뷰 집중 영역 (선택)]"
+argument-hint: "<커밋 범위 | 단일 커밋> [리뷰 참고 사항 (선택)]"
 allowed-tools:
   - Read
   - Grep
@@ -16,7 +16,7 @@ allowed-tools:
 
 ## 범위와 맥락
 
-`references/commit-range.md`를 완전히 읽고 범위 확정·최종 tree·보고 규칙을 적용한다. 나머지 인자는 리뷰 집중 영역이며 해당 관점을 우선하되 전체 변경의 중대한 문제도 놓치지 않는다.
+`references/commit-range.md`를 완전히 읽고 범위 확정·최종 tree·보고 규칙을 적용한다. 나머지 인자는 리뷰 참고 사항이며 이를 반영하되 전체 변경의 중대한 문제도 놓치지 않는다.
 
 ## 리뷰
 

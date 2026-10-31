@@ -1,7 +1,7 @@
 ---
 name: ppwork
 description: "단일 커밋 또는 커밋 범위를 새 세션의 codex·claude 리뷰어(ccreview·ssreview)로 한 번 병렬 리뷰하고, 지적을 vreview 절차로 검증해 보고한다. 코드는 수정하지 않는다."
-argument-hint: "<커밋 범위 | 단일 커밋> [리뷰어 구성 3자리, 각 0~2 (기본 200)] [리뷰 집중 영역 (선택)]"
+argument-hint: "<커밋 범위 | 단일 커밋> [리뷰어 구성 3자리, 각 0~2 (기본 200)] [리뷰 참고 사항 (선택)]"
 allowed-tools: Read Grep Glob Write Bash(git *) Bash(pwsh -NoProfile -File *run-reviewers.ps1*) PowerShell(git *) PowerShell(pwsh -NoProfile -File *run-reviewers.ps1*)
 ---
 
@@ -11,7 +11,7 @@ allowed-tools: Read Grep Glob Write Bash(git *) Bash(pwsh -NoProfile -File *run-
 
 ## 인자
 
-먼저 단일 커밋 또는 커밋 범위를 해석한다. 범위 뒤의 숫자 세 자리만 리뷰어 구성이며, 단일 숫자 ref를 구성으로 해석하지 않는다. 기본은 `200`, 각 자리 0~2, 합계 0은 오류다. 나머지는 리뷰 집중 영역이다.
+먼저 단일 커밋 또는 커밋 범위를 해석한다. 범위 뒤의 숫자 세 자리만 리뷰어 구성이며, 단일 숫자 ref를 구성으로 해석하지 않는다. 기본은 `200`, 각 자리 0~2, 합계 0은 오류다. 나머지는 리뷰 참고 사항이다.
 
 | 자리 | 리뷰어 |
 | --- | --- |

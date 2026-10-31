@@ -1,7 +1,7 @@
 ---
 name: ssreview
 description: "단일 커밋 또는 지정한 커밋 범위의 최종 누적 변경에 불필요한 구현·테스트 확장이 있는지 검토한다. 커밋된 변경의 범위와 간결성 점검에 사용한다."
-argument-hint: "<커밋 범위 | 단일 커밋> [리뷰 집중 영역 (선택)]"
+argument-hint: "<커밋 범위 | 단일 커밋> [리뷰 참고 사항 (선택)]"
 allowed-tools: Read Grep Glob Bash(git *)
 ---
 
@@ -11,7 +11,7 @@ allowed-tools: Read Grep Glob Bash(git *)
 
 ## 범위와 맥락
 
-`../ccreview/references/commit-range.md`를 완전히 읽고 범위 확정·최종 tree·보고 규칙을 적용한다. 나머지 인자는 리뷰 집중 영역이다.
+`../ccreview/references/commit-range.md`를 완전히 읽고 범위 확정·최종 tree·보고 규칙을 적용한다. 나머지 인자는 리뷰 참고 사항이다.
 
 사용자 요청·합의한 동작을 기준으로 삼는다. 별도 요청 요약이 있으면 먼저 읽고, 없으면 커밋 메시지와 관련 문서에서 목적을 확인한다. 목적을 확인할 수 없으면 범위 위반을 단정하지 않는다.
 

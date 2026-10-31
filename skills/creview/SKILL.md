@@ -2,7 +2,7 @@
 name: creview
 description: "미커밋된 staged 및 unstaged tracked 변경을 일반적인 코드 리뷰 기준으로 검토한다. 커밋 전 로컬 변경 점검에 사용한다."
 disable-model-invocation: true
-argument-hint: "[리뷰 집중 영역 (선택)]"
+argument-hint: "[리뷰 참고 사항 (선택)]"
 allowed-tools: Read Grep Glob Bash(git *)
 ---
 
@@ -11,7 +11,7 @@ allowed-tools: Read Grep Glob Bash(git *)
 staged 변경과 unstaged tracked 변경을 하나의 누적 변경으로 리뷰한다.
 
 - untracked 파일과 이미 커밋된 변경은 제외한다.
-- 사용자가 호출 시 제공한 집중 영역(`$ARGUMENTS`)이 있으면 해당 관점을 우선하되 전체 변경의 중대한 문제도 놓치지 않는다.
+- 사용자가 호출 시 제공한 리뷰 참고 사항(`$ARGUMENTS`)을 반영하되 전체 변경의 중대한 문제도 놓치지 않는다.
 - 리뷰만 수행하고 파일은 수정하지 않는다.
 
 ## 범위 수집

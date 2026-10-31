@@ -2,7 +2,7 @@
 name: lwork
 description: "미커밋 변경을 새 세션의 codex·claude 리뷰어(creview·sreview)로 병렬 리뷰하고, 결과를 vreview 절차로 검증해 권장안을 적용하는 루프를 수용할 지적이 없을 때까지 반복한다. 최대 라운드에도 권장안이 남으면 변경을 초기화하고 세부 단계로 나눠 다시 구현하며, 세부 단계마다 커밋한다."
 disable-model-invocation: true
-argument-hint: "[리뷰어 구성 3자리, 각 0~2 (기본 200)] [리뷰 집중 영역 (선택)]"
+argument-hint: "[리뷰어 구성 3자리, 각 0~2 (기본 200)] [리뷰 참고 사항 (선택)]"
 allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File *run-reviewers.ps1*) PowerShell(git *) PowerShell(pwsh -NoProfile -File *run-reviewers.ps1*)
 ---
 

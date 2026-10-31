@@ -41,6 +41,8 @@ claude plugin install dw@winter-home-skills
 
 커밋된 변경은 `/dw:ccreview HEAD`, `/dw:ssreview HEAD~3..HEAD`, `/dw:ppwork main...HEAD 110`처럼 범위를 먼저 지정한다.
 
+`/dw:iplan plans/plan.md 110 3단계`는 3단계만 구현·검증·리뷰·커밋하고 종료한다. 단계 인자를 생략하면 첫 미완료 단계부터 끝까지 실행한다.
+
 ### Codex
 
 ```powershell

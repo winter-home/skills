@@ -7,7 +7,8 @@ param(
     [string]$CodexModel,
     [string]$ClaudeModel = 'opus',
     [ValidateSet('read-only', 'workspace-write', 'danger-full-access')][string]$CodexSandbox = 'read-only',
-    [int]$TimeoutMinutes = 60
+    [int]$TimeoutMinutes = 60,
+    [ValidatePattern('^[0-9a-fA-F]{40,64}\.\.[0-9a-fA-F]{40,64}$')][string]$CommitRange
 )
 
 $ErrorActionPreference = 'Stop'
@@ -28,6 +29,11 @@ $counts = $Spec.ToCharArray() | ForEach-Object { [int][string]$_ }
 if (($counts | Measure-Object -Sum).Sum -eq 0) { throw "Spec $Spec requests no reviewers." }
 
 $Repo = [IO.Path]::GetFullPath((git -C $Repo rev-parse --show-toplevel))
+if ($CommitRange) {
+    $rangeParts = $CommitRange -split '\.\.'
+    [void](Invoke-Git rev-parse --verify "$($rangeParts[0])^{tree}")
+    [void](Invoke-Git rev-parse --verify "$($rangeParts[1])^{commit}")
+}
 $BriefFile = (Resolve-Path -LiteralPath $BriefFile).Path
 $OutDir = [IO.Path]::GetFullPath($OutDir)
 if (($OutDir + '\').StartsWith($Repo + '\', [StringComparison]::OrdinalIgnoreCase)) {
@@ -42,7 +48,8 @@ $skillsRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 function Get-ReviewerPrompt([string]$SkillName) {
     $skillFile = (Resolve-Path -LiteralPath (Join-Path $skillsRoot "$SkillName/SKILL.md")).Path
     $skillDirectory = Split-Path -Parent $skillFile
-    "Read and follow the $SkillName skill at '$skillFile'. Resolve its relative references from '$skillDirectory'. Skill arguments: $briefNote"
+    $skillArguments = if ($CommitRange) { "$CommitRange $briefNote" } else { $briefNote }
+    "Read and follow the $SkillName skill at '$skillFile'. Resolve its relative references from '$skillDirectory'. Skill arguments: $skillArguments"
 }
 
 $reviewers = [Collections.Generic.List[object]]::new()
@@ -67,12 +74,14 @@ if ($IsWindows -and $counts[0] -gt 0) {
 }
 
 $codexModelArgs = @(if ($CodexModel) { '-m', $CodexModel })
+$codeSkill = if ($CommitRange) { 'ccreview' } else { 'creview' }
+$simplicitySkill = if ($CommitRange) { 'ssreview' } else { 'sreview' }
 for ($i = 1; $i -le $counts[0]; $i++) {
-    $name = "codex-creview-$i"
+    $name = "codex-$codeSkill-$i"
     Add-Reviewer $name 'codex' (@('exec', '-C', $Repo) + $codexModelArgs + @('-s', $CodexSandbox,
-            '--ephemeral', '--color', 'never', '-o', (Join-Path $OutDir "$name.md"), (Get-ReviewerPrompt 'creview')))
+            '--ephemeral', '--color', 'never', '-o', (Join-Path $OutDir "$name.md"), (Get-ReviewerPrompt $codeSkill)))
 }
-foreach ($skill in @(@{ Name = 'creview'; Count = $counts[1] }, @{ Name = 'sreview'; Count = $counts[2] })) {
+foreach ($skill in @(@{ Name = $codeSkill; Count = $counts[1] }, @{ Name = $simplicitySkill; Count = $counts[2] })) {
     for ($i = 1; $i -le $skill.Count; $i++) {
         Add-Reviewer "claude-$($skill.Name)-$i" 'claude' @('-p', (Get-ReviewerPrompt $skill.Name),
             '--model', $ClaudeModel, '--output-format', 'json', '--no-session-persistence',
@@ -140,6 +149,7 @@ $after = Get-TreeFingerprint
 $summary = [ordered]@{
     spec              = $Spec
     repo              = $Repo
+    commitRange       = $CommitRange
     worktreeUnchanged = ($before -eq $after)
     reviewers         = @($reviewers | ForEach-Object {
             $hasOutput = (Test-Path -LiteralPath $_.Output) -and (Get-Item -LiteralPath $_.Output).Length -gt 0

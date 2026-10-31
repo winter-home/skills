@@ -1,12 +1,12 @@
 ---
-name: rreview
+name: pwork
 description: "미커밋 변경을 새 세션의 codex·claude 리뷰어(creview·sreview)로 한 번 병렬 리뷰하고, 지적이 있으면 vreview 절차로 검증한 보고서를 출력한다. 코드는 수정하지 않는다."
 disable-model-invocation: true
 argument-hint: "[리뷰어 구성 3자리, 각 0~2 (기본 200)] [리뷰 집중 영역 (선택)]"
 allowed-tools: Read Grep Glob Write Bash(git *) Bash(pwsh -NoProfile -File *run-reviewers.ps1*) PowerShell(git *) PowerShell(pwsh -NoProfile -File *run-reviewers.ps1*)
 ---
 
-# rreview — 병렬 리뷰·검증
+# pwork — 병렬 리뷰·검증
 
 staged·unstaged tracked 변경을 새 세션 리뷰어들이 병렬로 한 번 리뷰하고, 이 세션이 그 결과를 vreview 절차로 검증한 보고서를 출력한다. 권장안은 적용하지 않으며 `git add -N` 외의 stage·커밋은 하지 않는다.
 
@@ -28,7 +28,7 @@ staged·unstaged tracked 변경을 새 세션 리뷰어들이 병렬로 한 번 
 
 1. `git status --short`로 대상을 확인한다. staged·unstaged tracked 변경이 없으면 종료한다.
 2. 리뷰어는 untracked 파일을 보지 않는다. 이번 작업에서 만든 untracked 파일은 `git add -N`으로 리뷰 범위에 넣고, 무관한 파일은 건드리지 않는다.
-3. 실행 디렉터리를 만든다: `tmp/rreview/<yyyyMMdd-HHmmss>`
+3. 실행 디렉터리를 만든다: `tmp/pwork/<yyyyMMdd-HHmmss>`
 4. 실행 디렉터리의 `brief.md`에 리뷰어가 알 수 없는 맥락을 쓴다: 사용자 요청 요약, 합의한 동작·결정, 의도적으로 제외한 범위, 리뷰 집중 영역. 리뷰어는 이 대화를 보지 못하므로 sreview의 범위 판단은 이 파일에 의존한다.
 
 ## 리뷰
@@ -38,7 +38,7 @@ staged·unstaged tracked 변경을 새 세션 리뷰어들이 병렬로 한 번 
 저장소 루트에서 실행한다. 결과 디렉터리는 실행 디렉터리다.
 
 ```
-pwsh -NoProfile -File "<rreview 스킬 디렉터리>/scripts/run-reviewers.ps1" -Spec <구성> -OutDir "<결과 디렉터리>" -BriefFile "<실행 디렉터리>/brief.md"
+pwsh -NoProfile -File "<pwork 스킬 디렉터리>/scripts/run-reviewers.ps1" -Spec <구성> -OutDir "<결과 디렉터리>" -BriefFile "<실행 디렉터리>/brief.md"
 ```
 
 「실행 환경과 대기」에 따라 모든 리뷰어가 끝날 때까지 기다린 뒤 `summary.json`을 출력한다. 리뷰어가 도는 동안 작업 트리를 수정하지 않는다.

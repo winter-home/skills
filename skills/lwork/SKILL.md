@@ -1,18 +1,18 @@
 ---
-name: lreview
+name: lwork
 description: "미커밋 변경을 새 세션의 codex·claude 리뷰어(creview·sreview)로 병렬 리뷰하고, 결과를 vreview 절차로 검증해 권장안을 적용하는 루프를 수용할 지적이 없을 때까지 반복한다. 최대 라운드에도 권장안이 남으면 변경을 초기화하고 세부 단계로 나눠 다시 구현하며, 세부 단계마다 커밋한다."
 disable-model-invocation: true
 argument-hint: "[리뷰어 구성 3자리, 각 0~2 (기본 200)] [리뷰 집중 영역 (선택)]"
 allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File *run-reviewers.ps1*) PowerShell(git *) PowerShell(pwsh -NoProfile -File *run-reviewers.ps1*)
 ---
 
-# lreview — 리뷰·검증·개선 루프
+# lwork — 리뷰·검증·개선 루프
 
-`../rreview/SKILL.md`의 리뷰·검증을 라운드마다 반복하고 권장안을 적용한다. 수용할 지적이 없을 때까지 라운드를 반복하고, 최대 라운드에도 권장안이 남으면 「복구」로 다시 구현한다. lreview 호출은 「복구」의 초기화와 세부 단계 커밋을 허락한 것으로 본다.
+`../pwork/SKILL.md`의 리뷰·검증을 라운드마다 반복하고 권장안을 적용한다. 수용할 지적이 없을 때까지 라운드를 반복하고, 최대 라운드에도 권장안이 남으면 「복구」로 다시 구현한다. lwork 호출은 「복구」의 초기화와 세부 단계 커밋을 허락한 것으로 본다.
 
 ## 인자·진입 경로
 
-`../rreview/SKILL.md`를 읽고 「인자」를 따른다. 호출자는 구현 실패 여부, untracked 기준 목록, 검증 지시·허락 범위를 함께 넘길 수 있다.
+`../pwork/SKILL.md`를 읽고 「인자」를 따른다. 호출자는 구현 실패 여부, untracked 기준 목록, 검증 지시·허락 범위를 함께 넘길 수 있다.
 
 | 요청 | 준비 후 이동 |
 | ---- | ------------ |
@@ -22,7 +22,7 @@ allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File 
 ## 준비
 
 1. 호출자가 넘긴 untracked 기준 목록을 쓰고, 없으면 새 파일을 `git add -N` 하기 전에 현재 목록을 확보한다.
-2. rreview의 「준비」를 따르되 실행 디렉터리는 `tmp/lreview/<yyyyMMdd-HHmmss>`로 하고, 기준 목록을 `ledger.md`에 기록한다. 구현 실패 요청에는 변경이 없을 때의 종료 규칙을 적용하지 않는다.
+2. pwork의 「준비」를 따르되 실행 디렉터리는 `tmp/lwork/<yyyyMMdd-HHmmss>`로 하고, 기준 목록을 `ledger.md`에 기록한다. 구현 실패 요청에는 변경이 없을 때의 종료 규칙을 적용하지 않는다.
 
 - 리뷰어는 라운드마다 같은 구성으로 새로 띄운다.
 - 요청 범위가 바뀌면 `brief.md`를 갱신한다.
@@ -33,12 +33,12 @@ allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File 
 
 ### 1. 리뷰·검증
 
-rreview의 「리뷰」를 수행한다. 기본 결과 디렉터리는 `<실행 디렉터리>/round-N`이며, 복구 중에는 「세부 단계 실행」의 경로를 쓴다. 리뷰어 실패는 아래 규칙으로 처리한다.
+pwork의 「리뷰」를 수행한다. 기본 결과 디렉터리는 `<실행 디렉터리>/round-N`이며, 복구 중에는 「세부 단계 실행」의 경로를 쓴다. 리뷰어 실패는 아래 규칙으로 처리한다.
 
 - 실패한 리뷰어가 있는 라운드는 "수용할 지적 없음" 종료의 근거로 쓰지 않는다. 같은 구성으로 라운드를 다시 실행하며, 다시 실행한 라운드도 최대 라운드 수에 포함한다.
 - 같은 리뷰어가 같은 원인으로 두 라운드 연속 실패하거나 마지막 라운드에 실패한 리뷰어가 있으면 중단한다.
 - 검증할 때 실행 디렉터리의 `ledger.md`(이전 라운드 기록)를 함께 본다. 이전에 기각한 지적이 다시 나오면 앞선 근거를 인용해 기각한다. 이전 라운드 수정이 만든 코드를 다시 지적하면 vreview의 「재설계 후 적용」 조건으로 판단한다.
-- rreview의 「지적 정리」·「검증」 결과를 출력하고, vreview 보고서를 해당 라운드의 `vreview.md`에 저장한다. 파일 저장으로 출력을 대신하지 않으며, 적용 여부는 「판정과 적용」에서 결정한다.
+- pwork의 「지적 정리」·「검증」 결과를 출력하고, vreview 보고서를 해당 라운드의 `vreview.md`에 저장한다. 파일 저장으로 출력을 대신하지 않으며, 적용 여부는 「판정과 적용」에서 결정한다.
 
 ### 2. 판정과 적용
 

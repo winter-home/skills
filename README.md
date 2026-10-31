@@ -18,9 +18,11 @@ skills/                           두 도구가 사용하는 스킬 원본
 | `creview` | 미커밋 변경 코드 리뷰 |
 | `ccreview` | 지정한 커밋·범위 리뷰 |
 | `sreview` | 변경 범위·불필요한 확장 리뷰 |
+| `ssreview` | 지정한 커밋·범위의 불필요한 확장 리뷰 |
 | `vreview` | 리뷰 지적과 처방 검증 |
-| `rreview` | 새 세션 리뷰어 병렬 실행·검증·보고 |
-| `lreview` | 리뷰·수정 반복과 실패 복구 |
+| `pwork` | 새 세션 리뷰어 병렬 실행·검증·보고 |
+| `ppwork` | 지정한 커밋·범위의 병렬 리뷰·검증·보고 |
+| `lwork` | 리뷰·수정 반복과 실패 복구 |
 | `iplan` | 플랜 단계별 구현·검증·리뷰·커밋 |
 | `commit` | 프로젝트 메시지 규칙에 따른 커밋 |
 
@@ -35,7 +37,9 @@ claude plugin marketplace add winter-home/skills
 claude plugin install dw@winter-home-skills
 ```
 
-새 세션에서 `/dw:rreview 110`처럼 호출한다.
+새 세션에서 `/dw:pwork 110`처럼 호출한다.
+
+커밋된 변경은 `/dw:ccreview HEAD`, `/dw:ssreview HEAD~3..HEAD`, `/dw:ppwork main...HEAD 110`처럼 범위를 먼저 지정한다.
 
 ### Codex
 
@@ -50,7 +54,7 @@ Codex 앱을 다시 열거나 새 세션을 시작한 뒤 플러그인의 스킬
 
 - 리뷰 스크립트는 Git과 PowerShell 7.2 이상을 사용한다. 선택한 리뷰어의 `codex`·`claude` CLI가 PATH에 있고 각각 인증되어 있어야 한다.
 - 리뷰 결과는 작업 대상 저장소의 `tmp/`에 쓴다. 현재 스크립트는 저장소 안의 결과 폴더가 Git ignore 대상일 것을 요구하므로 실행 전에 해당 저장소의 `tmp/` ignore 설정을 확인한다.
-- 리뷰어는 패키지의 `creview`·`sreview` 파일을 직접 읽는다. 대상 프로젝트에 같은 이름의 스킬을 복사할 필요가 없다.
+- 리뷰어는 패키지의 `creview`·`sreview`(커밋 범위는 `ccreview`·`ssreview`) 파일을 직접 읽는다. 대상 프로젝트에 같은 이름의 스킬을 복사할 필요가 없다.
 - 각 스킬의 stage·커밋·초기화·검증 권한은 해당 `SKILL.md`와 대상 프로젝트 규칙을 따른다.
 
 ## 로컬 검증과 배포

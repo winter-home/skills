@@ -17,6 +17,8 @@ skills/                           두 도구가 사용하는 스킬 원본
 | --- | --- |
 | `creview` | 미커밋 변경 코드 리뷰 |
 | `ccreview` | 지정한 커밋·범위 리뷰 |
+| `areview` | 미커밋 변경이 여러 기능·계층에 미치는 아키텍처 영향 리뷰 |
+| `aareview` | 지정한 커밋·범위의 아키텍처 영향 리뷰 |
 | `sreview` | 변경 범위·불필요한 확장 리뷰 |
 | `ssreview` | 지정한 커밋·범위의 불필요한 확장 리뷰 |
 | `vreview` | 리뷰 지적과 처방 검증 |
@@ -41,11 +43,13 @@ claude plugin install dw@winter-home-skills
 
 새 세션에서 `/dw:pwork 110`처럼 호출한다.
 
+`/dw:areview`는 로컬 미커밋 변경을 대상으로, 여러 기능·계층의 책임 배치·의존 관계·데이터 소유권에 미치는 영향을 검토한다. `/dw:areview 인증·권한 영역의 경계`처럼 리뷰 참고 사항을 덧붙일 수 있다.
+
 `/dw:pjob 21 로그인 기능에 문제 없는지 확인해봐`는 Codex 2명·Claude 1명에게 같은 요청을 보내 결과를 검증한다. 미커밋 변경에 한정하지 않으며 파일은 수정하지 않는다.
 
 `/dw:mkplan 로그인 기능 구현`은 프로젝트 루트의 `plans/`에 `202610311005_로그인-기능-구현.md` 같은 플랜을 생성한다. 단계별 체크리스트·완료 조건과 진행 중 갱신 규칙을 포함하며 구현은 시작하지 않는다.
 
-커밋된 변경은 `/dw:ccreview HEAD`, `/dw:ssreview HEAD~3..HEAD`, `/dw:ppwork main...HEAD 110`처럼 범위를 먼저 지정한다.
+커밋된 변경은 `/dw:ccreview HEAD`, `/dw:aareview HEAD~3..HEAD`, `/dw:ssreview HEAD~3..HEAD`, `/dw:ppwork main...HEAD 110`처럼 범위를 먼저 지정한다.
 
 `/dw:implan plans/plan.md 110 3단계`는 3단계만 구현·검증·리뷰·커밋하고 종료한다. 단계 인자를 생략하면 첫 미완료 단계부터 끝까지 실행한다.
 

@@ -44,7 +44,7 @@ allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File 
 ### lwork 호출
 
 1. 호출 경로를 정한다. 구현 실패면 「복구」 요청, 구현을 마쳤는데 tracked 변경이 없으면 호출 없이 「리뷰 통과 후」, 그 외에는 일반 리뷰 요청으로 진행한다.
-2. 호출할 때 `../lwork/SKILL.md`를 읽고 리뷰어 구성, 작업 맥락(플랜 경로·현재 단계), 「시작 기록」의 untracked 기준 목록을 넘긴다. brief는 pwork의 「brief 원칙」에 따라 원문 위치·검토 범위를 적고 검증 지시·허락 범위와 이후 단계로 미룬 범위를 포함한다. 사용자가 제공한 리뷰 참고 사항이 있으면 함께 넘긴다.
+2. 호출할 때 `../lwork/SKILL.md`를 읽고 리뷰어 구성, 작업 맥락(플랜 경로·현재 단계), 「시작 기록」의 untracked 기준 목록을 넘긴다. 일반 성공 커밋 담당은 호출자(implan)로 지정하며, 복구의 세부 단계 커밋은 lwork가 수행한다. brief는 pwork의 「brief 원칙」에 따라 원문 위치·검토 범위를 적고 검증 지시·허락 범위와 이후 단계로 미룬 범위를 포함한다. 사용자가 제공한 리뷰 참고 사항이 있으면 함께 넘긴다.
 3. lwork 실행 디렉터리를 `progress.md`에 기록하고 결과로 판정한다.
 
 | lwork 결과                                                               | 처리                  |

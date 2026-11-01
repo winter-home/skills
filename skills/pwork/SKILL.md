@@ -1,8 +1,8 @@
 ---
 name: pwork
-description: "미커밋 변경을 새 세션의 codex·claude 리뷰어(creview·sreview)로 한 번 병렬 리뷰하고, 지적이 있으면 vreview 절차로 검증한 보고서를 출력한다. 코드는 수정하지 않는다."
+description: "미커밋 변경을 새 세션의 codex·claude 리뷰어(creview·sreview·areview)로 한 번 병렬 리뷰하고, 지적이 있으면 vreview 절차로 검증한 보고서를 출력한다. 코드는 수정하지 않는다."
 disable-model-invocation: true
-argument-hint: "[리뷰어 구성 3자리, 각 0~2 (기본 200)] [리뷰 참고 사항 (선택)]"
+argument-hint: "[리뷰어 구성 (예: c11s01a11, 기본 c20)] [리뷰 참고 사항 (선택)]"
 allowed-tools: Read Grep Glob Write Bash(git *) Bash(pwsh -NoProfile -File *run-reviewers.ps1*) PowerShell(git *) PowerShell(pwsh -NoProfile -File *run-reviewers.ps1*)
 ---
 
@@ -12,17 +12,20 @@ staged·unstaged tracked 변경을 새 세션 리뷰어들이 병렬로 한 번 
 
 ## 인자
 
-첫 인자가 숫자 세 자리이면 리뷰어 구성이다. 각 자리는 해당 리뷰어의 개수(0~2)다.
+첫 인자가 `c11s01a11`처럼 그룹을 붙인 토큰이면 리뷰어 구성이다. 각 그룹 뒤 두 자리는 Codex 수·Claude 수이며 각각 0~2다.
 
-| 자리 | 리뷰어                     |
-| ---- | -------------------------- |
-| 1    | codex 새 세션의 `creview`  |
-| 2    | claude 새 세션의 `creview` |
-| 3    | claude 새 세션의 `sreview` |
+| 그룹 | 종류 | 스킬 |
+| ---- | ---- | ---- |
+| `c` | 코드 리뷰 | `creview` |
+| `s` | 간결성 리뷰 | `sreview` |
+| `a` | 구조·설계 리뷰 | `areview` |
 
-- 숫자가 없으면 `200`. 어느 자리든 2를 넘거나 합계가 0이면 오류로 종료한다.
+- 그룹은 소문자이며 순서는 자유다. 생략한 그룹은 `00`이다. 중복 그룹·범위를 벗어난 숫자·합계 0은 실행 전에 오류로 종료한다.
+- 기존 숫자 세 자리도 지원한다. 순서는 Codex 코드·Claude 코드·Claude 간결성 리뷰 수다. 예: `110` = `c11`, `111` = `c11s01`.
+- 구성이 없으면 `c20`(기존 `200`과 동일). 숫자만인 토큰이나 그룹 문자 뒤 숫자로 시작하는 잘못된 구성은 참고 사항으로 넘기지 않고 오류로 종료한다.
 - 나머지 인자는 리뷰 참고 사항이다.
 - 리뷰어는 모두 서로 다른 새 세션이다.
+- 실행 전에 해석한 구성을 짧게 알린다. 예: `코드 C1/L1 · 간결 C0/L1 · 설계 C1/L1`.
 
 ## 준비
 
@@ -62,7 +65,7 @@ pwsh -NoProfile -File "<pwork 스킬 디렉터리>/scripts/run-reviewers.ps1" -S
 
 ### 지적 정리
 
-성공한 리뷰어의 출력(`summary.json`의 `output`)을 읽고 리뷰어별로 정리해 보여 준다. 지적마다 `심각도 파일:라인 요지`를 제목으로 쓰고 문제·근거·제안을 각 1~2문장으로 요약한다. 심각도는 creview 지적에만 붙이고 판정은 붙이지 않는다. 지적이 없는 리뷰어는 "지적 없음"으로 적는다.
+성공한 리뷰어의 출력(`summary.json`의 `output`)을 읽고 리뷰어별로 정리해 보여 준다. 지적마다 `심각도 파일:라인 요지`를 제목으로 쓰고 문제·근거·제안을 각 1~2문장으로 요약한다. 심각도는 creview 지적에만 붙이고, areview의 필수·선택적 개선 구분은 유지한다. 검증 판정은 붙이지 않는다. 지적이 없는 리뷰어는 "지적 없음"으로 적는다.
 
 ### 검증
 

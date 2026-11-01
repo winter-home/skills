@@ -43,6 +43,8 @@ claude plugin install dw@winter-home-skills
 
 새 세션에서 `/dw:pwork 110`처럼 호출한다.
 
+`/dw:pwork c11s01a11`, `/dw:lwork c11s01a11`, `/dw:implan plans/plan.md c11s01a11 3단계`처럼 리뷰 구성을 지정한다. `c`는 코드, `s`는 간결성, `a`는 구조·설계이며 각 두 자리는 Codex·Claude 수(0~2)다. 그룹 순서는 자유이고 생략한 종류는 0명이다. 기존 `110` 같은 3자리 구성도 지원하며 기본은 `c20`이다.
+
 `/dw:areview`는 로컬 미커밋 변경을 대상으로, 여러 기능·계층의 책임 배치·의존 관계·데이터 소유권에 미치는 영향을 검토한다. `/dw:areview 인증·권한 영역의 경계`처럼 리뷰 참고 사항을 덧붙일 수 있다.
 
 `/dw:pjob 21 로그인 기능에 문제 없는지 확인해봐`는 Codex 2명·Claude 1명에게 같은 요청을 보내 결과를 검증한다. 미커밋 변경에 한정하지 않으며 파일은 수정하지 않는다.
@@ -70,7 +72,7 @@ Windows에서는 저장소 루트의 `update-plugins.cmd`를 더블클릭하면 
 
 - 리뷰 스크립트는 Git과 PowerShell 7.2 이상을 사용한다. 선택한 리뷰어의 `codex`·`claude` CLI가 PATH에 있고 각각 인증되어 있어야 한다.
 - 리뷰 결과는 작업 대상 저장소의 `tmp/`에 쓴다. 현재 스크립트는 저장소 안의 결과 폴더가 Git ignore 대상일 것을 요구하므로 실행 전에 해당 저장소의 `tmp/` ignore 설정을 확인한다.
-- 리뷰어는 패키지의 `creview`·`sreview`(커밋 범위는 `ccreview`·`ssreview`) 파일을 직접 읽는다. 대상 프로젝트에 같은 이름의 스킬을 복사할 필요가 없다.
+- 리뷰어는 패키지의 `creview`·`sreview`·`areview`(커밋 범위는 `ccreview`·`ssreview`·`aareview`) 파일을 직접 읽는다. 대상 프로젝트에 같은 이름의 스킬을 복사할 필요가 없다.
 - 각 스킬의 stage·커밋·초기화·검증 권한은 해당 `SKILL.md`와 대상 프로젝트 규칙을 따른다.
 
 ## 로컬 검증과 배포

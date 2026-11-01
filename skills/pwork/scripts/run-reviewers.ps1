@@ -1,6 +1,6 @@
 #Requires -Version 7.2
 param(
-    [Parameter(Mandatory)][ValidatePattern('^[0-2]{2,3}$')][string]$Spec,
+    [Parameter(Mandatory)][string]$Spec,
     [Parameter(Mandatory)][string]$OutDir,
     [Parameter(Mandatory)][string]$BriefFile,
     [string]$Repo = (Get-Location).Path,
@@ -27,11 +27,34 @@ function Get-TreeFingerprint {
     [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData([Text.Encoding]::UTF8.GetBytes($text)))
 }
 
-if ($Spec.Length -ne $(if ($Job) { 2 } else { 3 })) { throw 'Job requires two digits; review requires three digits.' }
 if ($Job -and $CommitRange) { throw 'Job and CommitRange cannot be combined; specify the target in the brief.' }
-$counts = @($Spec.ToCharArray() | ForEach-Object { [int][string]$_ })
-if (($counts | Measure-Object -Sum).Sum -eq 0) { throw "Spec $Spec requests no reviewers." }
-if ($Job) { $counts += 0 }
+$counts = [ordered]@{ c = @(0, 0); s = @(0, 0); a = @(0, 0) }
+if ($Job) {
+    if (-not [regex]::IsMatch($Spec, '\A[0-2]{2}\z')) { throw 'Job requires two digits, each 0-2.' }
+    $counts.c = @([int][string]$Spec[0], [int][string]$Spec[1])
+}
+elseif ([regex]::IsMatch($Spec, '\A[0-2]{3}\z')) {
+    # Legacy order: Codex code, Claude code, Claude simplicity.
+    $counts.c = @([int][string]$Spec[0], [int][string]$Spec[1])
+    $counts.s = @(0, [int][string]$Spec[2])
+}
+elseif ([regex]::IsMatch($Spec, '\A(?:[csa][0-2]{2})+\z')) {
+    $seen = @{}
+    foreach ($groupMatch in [regex]::Matches($Spec, '([csa])([0-2])([0-2])')) {
+        $key = $groupMatch.Groups[1].Value
+        if ($seen.ContainsKey($key)) { throw "Duplicate reviewer group: $key" }
+        $seen[$key] = $true
+        $counts[$key] = @([int]$groupMatch.Groups[2].Value, [int]$groupMatch.Groups[3].Value)
+    }
+}
+else { throw 'Review requires c/s/a groups such as c11s01a11, or three legacy digits.' }
+$codexCount = 0
+$claudeCount = 0
+foreach ($pair in $counts.Values) {
+    $codexCount += $pair[0]
+    $claudeCount += $pair[1]
+}
+if ($codexCount + $claudeCount -eq 0) { throw "Spec $Spec requests no reviewers." }
 
 $Repo = [IO.Path]::GetFullPath((git -C $Repo rev-parse --show-toplevel))
 if ($CommitRange) {
@@ -93,7 +116,7 @@ function Add-Reviewer([string]$Name, [string]$Kind, [string[]]$Arguments) {
 
 # Codex's Windows sandbox cannot launch the Microsoft Store pwsh (CreateProcessAsUserW error 5), so another pwsh goes first on codex's PATH.
 $codexPath = $null
-if ($IsWindows -and $counts[0] -gt 0) {
+if ($IsWindows -and $codexCount -gt 0) {
     $candidates = @(Get-Command pwsh -All -CommandType Application -ErrorAction SilentlyContinue |
             Where-Object Source -NotMatch '\\WindowsApps\\' | ForEach-Object Source)
     $candidates += Join-Path $HOME '.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.exe'
@@ -103,15 +126,19 @@ if ($IsWindows -and $counts[0] -gt 0) {
 }
 
 $codexModelArgs = @(if ($CodexModel) { '-m', $CodexModel })
-$codeSkill = if ($Job) { 'job' } elseif ($CommitRange) { 'ccreview' } else { 'creview' }
-$simplicitySkill = if ($CommitRange) { 'ssreview' } else { 'sreview' }
-for ($i = 1; $i -le $counts[0]; $i++) {
-    $name = "codex-$codeSkill-$i"
-    Add-Reviewer $name 'codex' (@('exec', '-C', $Repo) + $codexModelArgs + @('-s', $CodexSandbox,
-            '--ephemeral', '--color', 'never', '-o', (Join-Path $OutDir "$name.md"), (Get-ReviewerPrompt $codeSkill)))
-}
-foreach ($skill in @(@{ Name = $codeSkill; Count = $counts[1] }, @{ Name = $simplicitySkill; Count = $counts[2] })) {
-    for ($i = 1; $i -le $skill.Count; $i++) {
+$skills = @(
+    @{ Key = 'c'; Name = $(if ($Job) { 'job' } elseif ($CommitRange) { 'ccreview' } else { 'creview' }) },
+    @{ Key = 's'; Name = $(if ($CommitRange) { 'ssreview' } else { 'sreview' }) },
+    @{ Key = 'a'; Name = $(if ($CommitRange) { 'aareview' } else { 'areview' }) }
+)
+foreach ($skill in $skills) {
+    $pair = $counts[$skill.Key]
+    for ($i = 1; $i -le $pair[0]; $i++) {
+        $name = "codex-$($skill.Name)-$i"
+        Add-Reviewer $name 'codex' (@('exec', '-C', $Repo) + $codexModelArgs + @('-s', $CodexSandbox,
+                '--ephemeral', '--color', 'never', '-o', (Join-Path $OutDir "$name.md"), (Get-ReviewerPrompt $skill.Name)))
+    }
+    for ($i = 1; $i -le $pair[1]; $i++) {
         Add-Reviewer "claude-$($skill.Name)-$i" 'claude' (@('-p', (Get-ReviewerPrompt $skill.Name),
             '--model', $ClaudeModel, '--output-format', 'json', '--no-session-persistence',
             '--add-dir', $skillsRoot, '--add-dir', (Split-Path -Parent $BriefFile)) + $sourceDirArgs +

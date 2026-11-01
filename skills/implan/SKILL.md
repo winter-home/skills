@@ -2,7 +2,7 @@
 name: implan
 description: "플랜 전체 또는 지정한 단계의 미완료 작업을 구현·검증하고, 단계마다 lwork 루프·커밋을 수행한다. 실패한 단계는 lwork 복구로 세부 단계로 나눠 다시 구현한다."
 disable-model-invocation: true
-argument-hint: "<플랜 파일> [lwork 리뷰어 구성 3자리 (기본 200) [실행 단계 (예: 3단계)]]"
+argument-hint: "<플랜 파일> [lwork 리뷰어 구성 (예: c11s01a11, 기본 c20) [실행 단계 (예: 3단계)]]"
 allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File *run-reviewers.ps1*) PowerShell(git *) PowerShell(pwsh -NoProfile -File *run-reviewers.ps1*)
 ---
 
@@ -13,7 +13,7 @@ allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File 
 ## 인자
 
 - 첫 인자는 플랜 파일 경로다. 없거나 파일이 없으면 종료한다.
-- 둘째 인자는 lwork 리뷰어 구성이며 호출마다 그대로 넘긴다. 없으면 기본값을 쓰고, 값이 있으면 각 자리 0~2의 세 자리 숫자(`000` 제외)인지 확인해 잘못된 값은 실행 전에 종료한다.
+- 둘째 인자는 lwork 리뷰어 구성이며 `../pwork/SKILL.md`의 「인자」 규칙으로 검증해 호출마다 그대로 넘긴다. 없으면 기본값을 쓰고, 잘못된 값은 실행 전에 종료한다.
 - 셋째 인자는 실행할 단계다(예: `3단계`). 단계 지정 시 둘째 인자도 반드시 명시한다. 지정하면 그 단계만, 생략하면 첫 미완료 단계부터 끝까지 실행한다.
 
 ## 준비
@@ -49,7 +49,7 @@ allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File 
 
 | lwork 결과                                                               | 처리                  |
 | -------------------------------------------------------------------------- | --------------------- |
-| 수용할 지적 없음·유예만 남음, Nit 적용 후 종료, 마지막 라운드에 간결성 개선만 남아 성공 종료, 복구의 모든 세부 단계 통과 | 「리뷰 통과 후」로 이동 |
+| 수용할 지적 없음·유예만 남음, Nit 적용 후 종료, 마지막 라운드에 간결성·선택적 설계 개선만 남아 성공 종료, 복구의 모든 세부 단계 통과 | 「리뷰 통과 후」로 이동 |
 | 리뷰어 실행 실패·복구 중단 등 lwork가 중단됨                             | implan 중단(롤백 없음) |
 
 ### 리뷰 통과 후

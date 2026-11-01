@@ -36,7 +36,7 @@ allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File 
 
 ## 라운드
 
-최대 10라운드. 라운드 N마다 아래를 순서대로 수행한다.
+최대 5라운드. 라운드 N마다 아래를 순서대로 수행한다.
 
 ### 1. 리뷰·검증
 

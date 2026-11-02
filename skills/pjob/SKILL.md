@@ -14,7 +14,7 @@ allowed-tools: Read Grep Glob Write Bash(git *) Bash(pwsh -NoProfile -File *run-
 
 첫 인자는 두 자리 구성이다. 첫 자리는 Codex, 둘째는 Claude 수이며 각 0~2, `00`은 오류다. 나머지는 필수 작업 요청이다. 잘못된 구성이나 빈 요청은 실행 전에 종료한다.
 
-예: `/dw:pjob 21 로그인 기능과 관련된 부분에 문제 없는지 확인해봐`
+예: `/wt:pjob 21 로그인 기능과 관련된 부분에 문제 없는지 확인해봐`
 
 ## 준비
 

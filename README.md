@@ -1,4 +1,4 @@
-# dw
+# wt
 
 Codex와 Claude Code에서 쓰는 코드 리뷰·플랜 실행·커밋 스킬 플러그인이다.
 
@@ -38,35 +38,35 @@ skills/                           두 도구가 사용하는 스킬 원본
 
 ```powershell
 claude plugin marketplace add winter-home/skills
-claude plugin install dw@winter-home-skills
+claude plugin install wt@winter-home-skills
 ```
 
-새 세션에서 `/dw:pwork 110`처럼 호출한다.
+새 세션에서 `/wt:pwork 110`처럼 호출한다.
 
-`/dw:pwork c11s01a11`, `/dw:lwork c11s01a11`, `/dw:implan plans/plan.md c11s01a11 3단계`처럼 리뷰 구성을 지정한다. `c`는 코드, `s`는 간결성, `a`는 구조·설계이며 각 두 자리는 Codex·Claude 수(0~2)다. 그룹 순서는 자유이고 생략한 종류는 0명이다. 기존 `110` 같은 3자리 구성도 지원하며 기본은 `c20`이다.
+`/wt:pwork c11s01a11`, `/wt:lwork c11s01a11`, `/wt:implan plans/plan.md c11s01a11 3단계`처럼 리뷰 구성을 지정한다. `c`는 코드, `s`는 간결성, `a`는 구조·설계이며 각 두 자리는 Codex·Claude 수(0~2)다. 그룹 순서는 자유이고 생략한 종류는 0명이다. 기존 `110` 같은 3자리 구성도 지원하며 기본은 `c20`이다.
 
-`/dw:areview`는 로컬 미커밋 변경을 대상으로, 여러 기능·계층의 책임 배치·의존 관계·데이터 소유권에 미치는 영향을 검토한다. `/dw:areview 인증·권한 영역의 경계`처럼 리뷰 참고 사항을 덧붙일 수 있다.
+`/wt:areview`는 로컬 미커밋 변경을 대상으로, 여러 기능·계층의 책임 배치·의존 관계·데이터 소유권에 미치는 영향을 검토한다. `/wt:areview 인증·권한 영역의 경계`처럼 리뷰 참고 사항을 덧붙일 수 있다.
 
-`/dw:pjob 21 로그인 기능에 문제 없는지 확인해봐`는 Codex 2명·Claude 1명에게 같은 요청을 보내 결과를 검증한다. 미커밋 변경에 한정하지 않으며 파일은 수정하지 않는다.
+`/wt:pjob 21 로그인 기능에 문제 없는지 확인해봐`는 Codex 2명·Claude 1명에게 같은 요청을 보내 결과를 검증한다. 미커밋 변경에 한정하지 않으며 파일은 수정하지 않는다.
 
-`/dw:mkplan 로그인 기능 구현`은 프로젝트 루트의 `plans/`에 `202610311005_로그인-기능-구현.md` 같은 플랜을 생성한다. 단계별 체크리스트·완료 조건과 진행 중 갱신 규칙을 포함하며 구현은 시작하지 않는다.
+`/wt:mkplan 로그인 기능 구현`은 프로젝트 루트의 `plans/`에 `202610311005_로그인-기능-구현.md` 같은 플랜을 생성한다. 단계별 체크리스트·완료 조건과 진행 중 갱신 규칙을 포함하며 구현은 시작하지 않는다.
 
-커밋된 변경은 `/dw:ccreview HEAD`, `/dw:aareview HEAD~3..HEAD`, `/dw:ssreview HEAD~3..HEAD`, `/dw:ppwork main...HEAD 110`처럼 범위를 먼저 지정한다.
+커밋된 변경은 `/wt:ccreview HEAD`, `/wt:aareview HEAD~3..HEAD`, `/wt:ssreview HEAD~3..HEAD`, `/wt:ppwork main...HEAD 110`처럼 범위를 먼저 지정한다.
 
-`/dw:implan plans/plan.md 110 3단계`는 3단계만 구현·검증·리뷰·커밋하고 종료한다. 단계 인자를 생략하면 첫 미완료 단계부터 끝까지 실행한다.
+`/wt:implan plans/plan.md 110 3단계`는 3단계만 구현·검증·리뷰·커밋하고 종료한다. 단계 인자를 생략하면 첫 미완료 단계부터 끝까지 실행한다.
 
 ### Codex
 
 ```powershell
 codex plugin marketplace add winter-home/skills
-codex plugin add dw@winter-home-skills
+codex plugin add wt@winter-home-skills
 ```
 
 Codex 앱을 다시 열거나 새 세션을 시작한 뒤 플러그인의 스킬 목록에서 실행한다. 로컬 설치를 시험할 때는 양쪽 `marketplace add`의 저장소 이름 대신 깨끗한 패키지 폴더의 절대 경로를 쓸 수 있다.
 
 ### 업데이트
 
-Windows에서는 저장소 루트의 `update-plugins.cmd`를 더블클릭하면 Claude Code·Codex에 `dw`, `document-skills`, `example-skills`, `discernment-nudge`를 설치하거나 갱신한다. 필요한 마켓플레이스도 없으면 등록하며, Claude Code 플러그인은 사용자 범위에 설치·갱신한다. 실패하면 해당 단계에서 멈추고 결과 창을 유지한다. 완료 후 앱을 다시 열거나 새 세션을 시작한다.
+Windows에서는 저장소 루트의 `update-plugins.cmd`를 더블클릭하면 Claude Code·Codex에 `wt`, `document-skills`, `example-skills`, `discernment-nudge`를 설치하거나 갱신한다. 필요한 마켓플레이스도 없으면 등록하며, Claude Code 플러그인은 사용자 범위에 설치·갱신한다. 실패하면 해당 단계에서 멈추고 결과 창을 유지한다. 완료 후 앱을 다시 열거나 새 세션을 시작한다.
 
 ## 실행 조건
 

@@ -8,7 +8,7 @@ for %%C in (claude codex) do (
     call :marketplace %%C anthropics/skills anthropic-agent-skills
     if errorlevel 1 goto failed
 
-    for %%P in (dw@winter-home-skills document-skills@anthropic-agent-skills example-skills@anthropic-agent-skills discernment-nudge@anthropic-agent-skills) do (
+    for %%P in (wt@winter-home-skills document-skills@anthropic-agent-skills example-skills@anthropic-agent-skills discernment-nudge@anthropic-agent-skills) do (
         call :plugin %%C %%P
         if errorlevel 1 goto failed
     )

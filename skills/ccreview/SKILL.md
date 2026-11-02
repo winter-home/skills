@@ -7,7 +7,15 @@ allowed-tools:
   - Read
   - Grep
   - Glob
-  - Bash(git *)
+  - Bash(git status *)
+  - Bash(git diff *)
+  - Bash(git show *)
+  - Bash(git log *)
+  - Bash(git grep *)
+  - Bash(git rev-parse *)
+  - Bash(git merge-base *)
+  - Bash(git ls-tree *)
+  - Bash(git hash-object -t tree --stdin)
 ---
 
 # 커밋 범위 코드 리뷰

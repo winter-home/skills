@@ -3,7 +3,7 @@ name: creview
 description: "미커밋된 staged 및 unstaged tracked 변경을 일반적인 코드 리뷰 기준으로 검토한다. 커밋 전 로컬 변경 점검에 사용한다."
 disable-model-invocation: true
 argument-hint: "[리뷰 참고 사항 (선택)]"
-allowed-tools: Read Grep Glob Bash(git *)
+allowed-tools: Read Grep Glob Bash(git status *) Bash(git diff *) Bash(git show *) Bash(git log *) Bash(git grep *)
 ---
 
 # 미커밋 코드 리뷰

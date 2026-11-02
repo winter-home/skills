@@ -1,6 +1,7 @@
 ---
 name: ssreview
 description: "단일 커밋 또는 지정한 커밋 범위의 최종 누적 변경에 불필요한 구현·테스트 확장이 있는지 검토한다. 커밋된 변경의 범위와 간결성 점검에 사용한다."
+disable-model-invocation: true
 argument-hint: "<커밋 범위 | 단일 커밋> [리뷰 참고 사항 (선택)]"
 allowed-tools: Read Grep Glob Bash(git *)
 ---

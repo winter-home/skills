@@ -1,6 +1,7 @@
 ---
 name: ppwork
 description: "단일 커밋 또는 커밋 범위를 새 세션의 codex·claude 리뷰어(ccreview·ssreview·aareview)로 한 번 병렬 리뷰하고, 지적을 vreview 절차로 검증해 보고한다. 코드는 수정하지 않는다."
+disable-model-invocation: true
 argument-hint: "<커밋 범위 | 단일 커밋> [리뷰어 구성 (예: c11s01a11, 기본 c20)] [리뷰 참고 사항 (선택)]"
 allowed-tools: Read Grep Glob Write Bash(git *) Bash(pwsh -NoProfile -File *run-reviewers.ps1*) PowerShell(git *) PowerShell(pwsh -NoProfile -File *run-reviewers.ps1*)
 ---

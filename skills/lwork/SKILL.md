@@ -2,7 +2,7 @@
 name: lwork
 description: "미커밋 변경을 새 세션의 codex·claude 리뷰어(creview·sreview·areview)로 병렬 리뷰하고 vreview 절차로 검증·개선한다. 단독 실행은 성공 시 커밋한다. 마지막 라운드에 간결성·선택적 설계 개선·Nit만 남으면 적용 없이 권고로 보고하고 성공 종료하며, 그 외 미해결 권장안은 초기화·분할 구현으로 복구하고 세부 단계마다 커밋한다."
 disable-model-invocation: true
-argument-hint: "[리뷰어 구성 (예: c11s01a11, 기본 c20)] [리뷰 참고 사항 (선택)]"
+argument-hint: "[지라 티켓 번호] [리뷰어 구성 (예: c11s01a11, 기본 c20)] [리뷰 참고 사항 (선택)]"
 allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File *run-reviewers.ps1*) PowerShell(git *) PowerShell(pwsh -NoProfile -File *run-reviewers.ps1*)
 ---
 
@@ -12,7 +12,9 @@ allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File 
 
 ## 인자·진입 경로
 
-`../pwork/SKILL.md`를 읽고 「인자」를 따른다. 호출자는 작업 맥락(플랜 경로·단계), 구현 실패 여부, untracked 기준 목록, 검증 지시·허락 범위, 일반 성공 커밋 담당(기본 lwork)을 함께 넘길 수 있다. 복구의 세부 단계 커밋은 이 지정과 관계없이 lwork가 수행한다.
+첫 인자가 `KEY-숫자` 형식(예: `JIRA-1234`)이면 지라 번호로 분리하고, 나머지 인자는 `../pwork/SKILL.md`의 「인자」를 따른다. 생략하면 번호를 붙이지 않는다. 번호가 있으면 일반 성공·복구의 모든 커밋에서 `../commit/SKILL.md`의 첫 인자로 넘기며, 재분할에도 유지한다.
+
+호출자는 작업 맥락(플랜 경로·단계), 구현 실패 여부, untracked 기준 목록, 검증 지시·허락 범위, 일반 성공 커밋 담당(기본 lwork)을 함께 넘길 수 있다. 복구의 세부 단계 커밋은 이 지정과 관계없이 lwork가 수행한다.
 
 | 요청 | 준비 후 이동 |
 | ---- | ------------ |
@@ -22,7 +24,7 @@ allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File 
 ## 준비
 
 1. 호출자가 넘긴 untracked 기준 목록을 쓰고, 없으면 새 파일을 `git add -N` 하기 전에 현재 목록을 확보한다.
-2. pwork의 「준비」를 따르되 실행 디렉터리는 `tmp/lwork/<yyyyMMdd-HHmmss>`로 하고, 기준 목록을 `ledger.md`에 기록한다. 구현 실패 요청에는 변경이 없을 때의 종료 규칙을 적용하지 않는다.
+2. pwork의 「준비」를 따르되 실행 디렉터리는 `tmp/lwork/<yyyyMMdd-HHmmss>`로 하고, 지라 번호(없으면 없음)와 기준 목록을 `ledger.md`에 기록한다. 구현 실패 요청에는 변경이 없을 때의 종료 규칙을 적용하지 않는다.
 
 - 리뷰어는 라운드마다 같은 구성으로 새로 띄운다.
 - 요청 범위가 바뀌면 `brief.md`를 갱신한다.

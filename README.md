@@ -57,6 +57,8 @@ claude plugin install wt@winter-home-skills
 
 `/wt:implan plans/plan.md 110 3단계`는 3단계만 구현·검증·리뷰·커밋하고 종료한다. 단계 인자를 생략하면 첫 미완료 단계부터 끝까지 실행한다.
 
+지라 번호는 `/wt:lwork JIRA-1234 c11`, `/wt:implan JIRA-1234 plans/plan.md c11 3단계`처럼 첫 인자로 지정한다. 일반·복구 커밋 모두 같은 번호를 사용한다.
+
 ### Codex
 
 ```powershell

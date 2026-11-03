@@ -2,7 +2,7 @@
 name: implan
 description: "플랜 전체 또는 지정한 단계의 미완료 작업을 구현·검증하고, 단계마다 lwork 루프·커밋을 수행한다. 실패한 단계는 lwork 복구로 세부 단계로 나눠 다시 구현한다."
 disable-model-invocation: true
-argument-hint: "<플랜 파일> [lwork 리뷰어 구성 (예: c11s01a11, 기본 c20) [실행 단계 (예: 3단계)]]"
+argument-hint: "[지라 티켓 번호] <플랜 파일> [lwork 리뷰어 구성 (예: c11s01a11, 기본 c20) [실행 단계 (예: 3단계)]]"
 allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File *run-reviewers.ps1*) PowerShell(git *) PowerShell(pwsh -NoProfile -File *run-reviewers.ps1*)
 ---
 
@@ -12,6 +12,7 @@ allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File 
 
 ## 인자
 
+- 첫 인자가 `KEY-숫자` 형식(예: `JIRA-1234`)이면 지라 번호로 분리하고, 나머지 인자에 아래 순서를 적용한다. 생략하면 번호를 붙이지 않는다.
 - 첫 인자는 플랜 파일 경로다. 없거나 파일이 없으면 종료한다.
 - 둘째 인자는 lwork 리뷰어 구성이며 `../pwork/SKILL.md`의 「인자」 규칙으로 검증해 호출마다 그대로 넘긴다. 없으면 기본값을 쓰고, 잘못된 값은 실행 전에 종료한다.
 - 셋째 인자는 실행할 단계다(예: `3단계`). 단계 지정 시 둘째 인자도 반드시 명시한다. 지정하면 그 단계만, 생략하면 첫 미완료 단계부터 끝까지 실행한다.
@@ -19,7 +20,7 @@ allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File 
 ## 준비
 
 1. 플랜 파일 외의 tracked 변경이 있으면 종료한다. 단계 경계를 커밋으로 나누므로 시작 전 변경이 섞이면 안 된다.
-2. 실행 디렉터리를 만든다: `tmp/implan/<yyyyMMdd-HHmmss>`. 단계 기록(`progress.md`)을 둔다.
+2. 실행 디렉터리를 만든다: `tmp/implan/<yyyyMMdd-HHmmss>`. 단계 기록(`progress.md`)에 지라 번호(없으면 없음)를 기록한다.
 
 ## 단계 정리
 
@@ -44,7 +45,7 @@ allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File 
 ### lwork 호출
 
 1. 호출 경로를 정한다. 구현 실패면 「복구」 요청, 구현을 마쳤는데 tracked 변경이 없으면 호출 없이 「리뷰 통과 후」, 그 외에는 일반 리뷰 요청으로 진행한다.
-2. 호출할 때 `../lwork/SKILL.md`를 읽고 리뷰어 구성, 작업 맥락(플랜 경로·현재 단계), 「시작 기록」의 untracked 기준 목록을 넘긴다. 일반 성공 커밋 담당은 호출자(implan)로 지정하며, 복구의 세부 단계 커밋은 lwork가 수행한다. brief는 pwork의 「brief 원칙」에 따라 원문 위치·검토 범위를 적고 검증 지시·허락 범위와 이후 단계로 미룬 범위를 포함한다. 사용자가 제공한 리뷰 참고 사항이 있으면 함께 넘긴다.
+2. 호출할 때 `../lwork/SKILL.md`를 읽고 지라 번호(있으면 첫 인자), 리뷰어 구성, 작업 맥락(플랜 경로·현재 단계), 「시작 기록」의 untracked 기준 목록을 넘긴다. 일반 성공 커밋 담당은 호출자(implan)로 지정하며, 복구의 세부 단계 커밋은 lwork가 수행한다. brief는 pwork의 「brief 원칙」에 따라 원문 위치·검토 범위를 적고 검증 지시·허락 범위와 이후 단계로 미룬 범위를 포함한다. 사용자가 제공한 리뷰 참고 사항이 있으면 함께 넘긴다.
 3. lwork 실행 디렉터리를 `progress.md`에 기록하고 결과로 판정한다.
 
 | lwork 결과                                                               | 처리                  |
@@ -56,7 +57,7 @@ allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File 
 
 1. 「전체 검증」의 실행 조건에 해당하면 이를 통과한 뒤 아래 완료 표시·커밋으로 진행한다.
 2. 플랜에서 단계의 체크 항목을 `[x]`로 바꾼다.
-3. 단계에서 바꾼 tracked 파일만 stage하고 `../commit/SKILL.md`의 메시지 규칙으로 커밋한다. 복구가 이미 커밋해 변경이 없으면 건너뛴다.
+3. 단계에서 바꾼 tracked 파일만 stage하고 `../commit/SKILL.md`에 따라 커밋한다. 지라 번호가 있으면 commit의 첫 인자로 넘긴다. 복구가 이미 커밋해 변경이 없으면 건너뛴다.
 4. 커밋 해시를 `progress.md`에 기록한다. 복구를 거쳤으면 세부 단계 커밋도 기록한다. 실행 범위의 작업(분할·복구의 세부 단계 포함)을 모두 마쳤으면 종료하고, 아니면 범위 내 다음 단계로 넘어간다.
 
 ## 전체 검증

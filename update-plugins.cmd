@@ -27,16 +27,20 @@ exit /b 1
 
 :marketplace
 echo [%~1] Preparing marketplace %~3...
-call :has_entry %~1 marketplace %~3
+if "%~1"=="codex" (
+    call :codex_has_entry %~3
+) else (
+    call :has_entry claude marketplace %~3
+)
 if errorlevel 2 exit /b 1
 if errorlevel 1 (
     call %~1 plugin marketplace add %~2
     if errorlevel 1 exit /b 1
 )
-if "%~1"=="claude" (
-    call claude plugin marketplace update %~3
-) else (
+if "%~1"=="codex" (
     call codex plugin marketplace upgrade %~3
+) else (
+    call claude plugin marketplace update %~3
 )
 exit /b %errorlevel%
 
@@ -55,7 +59,13 @@ if errorlevel 1 (
 )
 exit /b %errorlevel%
 
+:codex_has_entry
+powershell.exe -NoProfile -NonInteractive -File "%~dp0codex-marketplace-registration.ps1" "%~1"
+if "%errorlevel%"=="0" exit /b 0
+if "%errorlevel%"=="3" exit /b 1
+exit /b 2
+
 :has_entry
 rem Return 0 for present, 1 for absent, and 2 for a failed query.
-powershell.exe -NoProfile -Command "$json = & $env:ComSpec /d /c '%~1 plugin %~2 list --json'; if ($LASTEXITCODE -ne 0) { exit 2 }; try { $entries = ConvertFrom-Json -InputObject ($json -join [Environment]::NewLine) -ErrorAction Stop; if ('%~2' -eq 'marketplace') { if ('%~1' -eq 'codex') { $entries = $entries.marketplaces }; $found = @($entries | Where-Object { $_.name -eq '%~3' }).Count } else { $found = @($entries | Where-Object { $_.id -eq '%~3' -and $_.scope -eq 'user' }).Count }; if ($found) { exit 0 }; exit 1 } catch { Write-Error $_; exit 2 }"
+powershell.exe -NoProfile -Command "$json = & $env:ComSpec /d /c '%~1 plugin %~2 list --json'; if ($LASTEXITCODE -ne 0) { exit 2 }; try { $entries = ConvertFrom-Json -InputObject ($json -join [Environment]::NewLine) -ErrorAction Stop; if ('%~2' -eq 'marketplace') { $found = @($entries | Where-Object { $_.name -eq '%~3' }).Count } else { $found = @($entries | Where-Object { $_.id -eq '%~3' -and $_.scope -eq 'user' }).Count }; if ($found) { exit 0 }; exit 1 } catch { Write-Error $_; exit 2 }"
 exit /b %errorlevel%

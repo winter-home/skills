@@ -1,6 +1,6 @@
 ---
 name: lwork
-description: "미커밋 변경을 새 세션의 codex·claude 리뷰어(creview·sreview·areview)로 병렬 리뷰하고 vreview 절차로 검증·개선한다. 단독 실행은 성공 시 커밋한다. 4라운드부터 Nit만 남거나 마지막 라운드에 간결성·선택적 설계 개선·Nit만 남으면 적용 없이 권고로 보고하고 성공 종료한다. 마지막 라운드에 그 외 미해결 권장안이 남으면 초기화·분할 구현으로 복구하고 세부 단계마다 커밋한다."
+description: "미커밋 변경을 새 세션의 codex·claude 리뷰어(creview·sreview·areview)로 병렬 리뷰하고 vreview 절차로 검증·개선한다. 단독 실행은 성공 시 커밋한다. 3라운드부터 Nit만 남거나 마지막 라운드에 간결성·선택적 설계 개선·Nit만 남으면 적용 없이 권고로 보고하고 성공 종료한다. 마지막 라운드에 그 외 미해결 권장안이 남으면 초기화·분할 구현으로 복구하고 세부 단계마다 커밋한다."
 disable-model-invocation: true
 argument-hint: "[지라 티켓 번호] [리뷰어 구성 (예: c11s01a11, 기본 c20)] [리뷰 참고 사항 (선택)]"
 allowed-tools: Read Grep Glob Edit Write Bash(git *) Bash(pwsh -NoProfile -File *run-reviewers.ps1*) PowerShell(git *) PowerShell(pwsh -NoProfile -File *run-reviewers.ps1*)
@@ -56,7 +56,7 @@ pwork의 「리뷰」를 수행한다. 기본 결과 디렉터리는 `<실행 �
 | 조건                                                   | 처리                                      |
 | ------------------------------------------------------ | ----------------------------------------- |
 | 남은 항목 없음                                         | 성공 종료                                 |
-| 4라운드부터 creview의 Nit만 남음 또는 마지막 라운드에 간결성 개선·areview의 선택적 개선·creview의 Nit만 남음(혼합 포함) | 적용하지 않고 미적용 권고로 보고한 뒤 성공 종료(복구 중 세부 단계도 통과) |
+| 3라운드부터 creview의 Nit만 남음 또는 마지막 라운드에 간결성 개선·areview의 선택적 개선·creview의 Nit만 남음(혼합 포함) | 적용하지 않고 미적용 권고로 보고한 뒤 성공 종료(복구 중 세부 단계도 통과) |
 | 그 외, 마지막 라운드                                   | 적용하지 않고 실패. 일반 라운드면 「복구」, 복구 중이면 「세부 단계 실패」로 이동 |
 | 그 외                                                  | 종합 권장 액션대로 적용하고 다음 라운드로 |
 

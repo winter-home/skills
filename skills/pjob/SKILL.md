@@ -20,7 +20,7 @@ allowed-tools: Read Grep Glob Write Bash(git *) Bash(pwsh -NoProfile -File *run-
 
 1. 대상 Git 프로젝트 루트에서 상태를 확인한다. 대상은 요청으로 정하며 미커밋 변경이 없어도 실행한다. `git add -N`도 하지 않는다.
 2. 실행 디렉터리 `tmp/pjob/<yyyyMMdd-HHmmss>`를 만든다.
-3. `../pwork/SKILL.md`의 「brief 원칙」·「원문 접근」에 따라 준비하고 검증 허락 범위를 포함한다. 플랜 작업 중이면 확인된 플랜 경로·현재 단계를 작업 맥락으로 적는다.
+3. `../_shared/brief.md`와 `../pwork/SKILL.md`의 「원문 접근」에 따라 brief를 준비한다. 작업 요청을 항상 적고 검증 허락 범위를 포함한다. 플랜 작업 중이면 확인된 플랜 경로·현재 단계를 작업 맥락으로 적는다.
 
 ## 실행
 

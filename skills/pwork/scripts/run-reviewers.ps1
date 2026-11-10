@@ -155,7 +155,11 @@ foreach ($r in $reviewers) {
         $psi = [Diagnostics.ProcessStartInfo]::new($exe)
         foreach ($a in $r.Arguments) { $psi.ArgumentList.Add($a) }
         $psi.WorkingDirectory = $Repo
-        if ($r.Kind -eq 'codex' -and $codexPath) { $psi.Environment['PATH'] = $codexPath }
+        if ($r.Kind -eq 'codex' -and $IsWindows) {
+            if ($codexPath) { $psi.Environment['PATH'] = $codexPath }
+            # A standalone CLI has no Windows package identity for the desktop app's registered core.
+            [void]$psi.Environment.Remove('CODEX_WINDOWS_REGISTERED_CORE')
+        }
         $psi.UseShellExecute = $false
         $psi.RedirectStandardInput = $true
         $psi.RedirectStandardOutput = $true

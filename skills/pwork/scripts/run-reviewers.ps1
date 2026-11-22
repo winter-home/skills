@@ -100,7 +100,11 @@ function Get-ReviewerPrompt([string]$SkillName) {
     }
     $skillFile = (Resolve-Path -LiteralPath (Join-Path $skillsRoot "$SkillName/SKILL.md")).Path
     $skillDirectory = Split-Path -Parent $skillFile
-    $skillArguments = if ($CommitRange) { "$CommitRange $briefNote" } else { $briefNote }
+    $skillArguments = if ($CommitRange) {
+        "$CommitRange $briefNote"
+    } else {
+        "Review all final tracked changes, staged and unstaged, using 'git diff HEAD --' and the working-tree files. This Git scope takes precedence over any staging-based limit in the brief. $briefNote"
+    }
     "Read and follow the $SkillName skill at '$skillFile'. Resolve its relative references from '$skillDirectory'. Skill arguments: $skillArguments"
 }
 
